@@ -1,0 +1,11 @@
+*
+!bin/
+!bin/**
+!lib/
+!lib/**
+!.editorconfig
+!.gitignore
+!LICENSE
+!dune-project
+!flake.lock
+!flake.nix
