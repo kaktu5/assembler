@@ -17,22 +17,28 @@
           pname = "assembler";
           version = "0.0.0";
           src = ./.;
-          buildInputs = [pkgs.ocamlPackages.cmdliner];
+          buildInputs = with pkgs.ocamlPackages; [base sexplib stdio];
         };
       };
       devShells.default = pkgs.mkShell {
-        inherit (self.packages.${system}.assembler) buildInputs;
-        nativeBuildInputs = with pkgs; [
+        buildInputs = with pkgs.ocamlPackages; [base sexplib stdio];
+        nativeBuildInputs = with pkgs.ocamlPackages; [
           dune_3
-          ocamlPackages.ocaml
+          findlib
+          ocaml
+          ocaml-lsp
         ];
-        shellHook = with pkgs; "${lib.getExe cloc} .";
+        shellHook = with pkgs; ''
+          ${lib.getExe cloc} --vcs git --hide-rate --quiet .
+          dune build
+        '';
       };
       formatter =
         (inputs.treefmt-nix.lib.evalModule pkgs {
-          projectRootFile = "flake.nix";
           programs = {
             alejandra.enable = true;
+            deadnix.enable = true;
+            statix.enable = true;
             ocamlformat.enable = true;
           };
         })
