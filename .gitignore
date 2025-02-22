@@ -6,6 +6,7 @@
 !.editorconfig
 !.gitignore
 !LICENSE
+!config.sexp
 !dune-project
 !flake.lock
 !flake.nix

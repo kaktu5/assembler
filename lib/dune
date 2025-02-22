@@ -1,2 +1,4 @@
 (library
- (name assembler))
+  (name assembler)
+  (modules config lexer)
+  (libraries base sexplib))
