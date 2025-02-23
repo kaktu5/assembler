@@ -10,3 +10,5 @@
 !dune-project
 !flake.lock
 !flake.nix
+!test.asm
+!testv2.asm
