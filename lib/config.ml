@@ -1,15 +1,12 @@
 open Base
+open Sexplib.Std
 
-type config = { instructions : string list }
+type config = { instructions : string list; registers : string list }
+[@@deriving sexp]
 
-let parse (sexp : Sexplib0.Sexp.t) =
-  let open Sexplib.Sexp in
-  match sexp with
-  | List (Atom "instructions" :: ops) ->
-      {
-        instructions =
-          List.map ops ~f:(function
-            | Atom op -> op
-            | _ -> failwith "Non-atom in instructions list");
-      }
-  | _ -> failwith "Invalid config format: expected (instructions ...)"
+let parse (sexp : Sexplib.Sexp.t) =
+  try config_of_sexp sexp
+  with exn ->
+    failwith
+    @@ Printf.sprintf "Config error: %s\nInput: %s" (Exn.to_string exn)
+    @@ Sexp.to_string sexp

@@ -16,4 +16,6 @@ let () =
     | exception Sys_error msg -> failwith ("Failed to read file: " ^ msg)
   in
   Stdio.print_endline
-    (result |> List.map ~f:Lexer.token_to_sexpr |> String.concat ~sep:"\n")
+    (result
+    |> List.map ~f:(fun t -> Sexplib.Sexp.to_string (Lexer.sexp_of_token t))
+    |> String.concat ~sep:"\n")

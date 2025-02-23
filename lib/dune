@@ -1,4 +1,5 @@
 (library
   (name assembler)
   (modules config lexer)
+  (preprocess (pps ppx_sexp_conv))
   (libraries base sexplib))

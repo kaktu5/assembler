@@ -4,7 +4,10 @@ type token =
   | GlobalLabel of string
   | LocalLabel of string
   | Instruction of string
-  | Tmp of string
+  | Register of string
+  | GlobalIdent of string
+  | LocalIdent of string
+[@@deriving sexp]
 
 let matches_ps ?(p : char option) ?(s : char option) (str : string) : bool =
   match not @@ String.is_empty str with
@@ -26,15 +29,13 @@ let lex (cfg : Config.config) (str : string) : token list =
   in
   List.map tokens ~f:(fun token ->
       match token with
-      | t when matches_ps ~p:'.' ~s:':' t ->
-          LocalLabel (String.drop_prefix (String.drop_suffix t 1) 1)
-      | t when matches_ps ~s:':' t -> GlobalLabel (String.drop_suffix t 1)
-      | t when List.mem cfg.instructions t ~equal:String.equal -> Instruction t
-      | _ -> Tmp token)
-
-let token_to_sexpr token : string =
-  match token with
-  | LocalLabel str -> Printf.sprintf "(LocalLabel \"%s\")" str
-  | GlobalLabel str -> Printf.sprintf "(GlobalLabel \"%s\")" str
-  | Instruction str -> Printf.sprintf "(Instruction \"%s\")" str
-  | Tmp str -> Printf.sprintf "(Tmp \"%s\")" str
+      | token when matches_ps ~p:'.' ~s:':' token ->
+          LocalLabel (String.drop_prefix (String.drop_suffix token 1) 1)
+      | token when matches_ps ~s:':' token ->
+          GlobalLabel (String.drop_suffix token 1)
+      | token when List.mem cfg.instructions token ~equal:String.equal ->
+          Instruction token
+      | token when List.mem cfg.registers token ~equal:String.equal ->
+          Register token
+      | token when matches_ps ~p:'.' token -> LocalIdent token
+      | _ -> GlobalIdent token)
