@@ -10,19 +10,17 @@ type token =
 [@@deriving sexp]
 
 let matches_ps ?(p : char option) ?(s : char option) (str : string) : bool =
-  match not @@ String.is_empty str with
-  | true -> (
-      let strp = str.[0] in
-      let strs = str.[String.length str - 1] in
+  match String.length str with
+  | 0 -> ( match (p, s) with None, None -> true | _ -> false)
+  | len -> (
+      let ( = ) = Base.Char.( = ) in
       match (p, s) with
       | None, None -> true
-      | Some p', None -> Char.equal strp p'
-      | None, Some s' -> Char.equal strs s'
-      | Some p', Some s' -> Char.equal strp p' && Char.equal strs s')
-  | _ -> ( match (p, s) with None, None -> true | _ -> false)
+      | Some p', None -> str.[0] = p'
+      | None, Some s' -> str.[len - 1] = s'
+      | Some p', Some s' -> str.[0] = p' && str.[len - 1] = s')
 
 let lex (cfg : Config.config) (str : string) : token list =
-  let _ = cfg in
   let tokens =
     String.split_on_chars str ~on:[ ' '; '\t'; '\n' ]
     |> List.filter ~f:(fun token -> not @@ String.is_empty token)
